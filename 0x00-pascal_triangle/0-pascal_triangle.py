@@ -10,7 +10,7 @@ def pascal_triangle(n):
 
     # return empty triangle if n <= 0
     if n <= 0:
-        return pascal
+        return triangle
 
     # generate triangle
     for i in range(n):
