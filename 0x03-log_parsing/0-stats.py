@@ -3,7 +3,6 @@
 A script for parsing HTTP request logs.
 """
 import re
-import sys
 
 
 def extract_input(input_line):
@@ -12,16 +11,16 @@ def extract_input(input_line):
     """
     fp = (
         r'\s*(?P<ip>\S+)\s*',
-        r'\s*\[(?P<date>[^]]+)\]',
+        r'\s*\[(?P<date>\d+\-\d+\-\d+ \d+:\d+:\d+\.\d+)\]',
         r'\s*"(?P<request>[^"]*)"\s*',
-        r'\s*(?P<status_code>\d+)',
+        r'\s*(?P<status_code>\S+)',
         r'\s*(?P<file_size>\d+)'
     )
     info = {
         'status_code': 0,
         'file_size': 0,
     }
-    log_fmt = '{} - {} {} {} {}'.format(fp[0], fp[1], fp[2], fp[3], fp[4])
+    log_fmt = '{}\\-{}{}{}{}\\s*'.format(fp[0], fp[1], fp[2], fp[3], fp[4])
     resp_match = re.fullmatch(log_fmt, input_line)
     if resp_match is not None:
         status_code = resp_match.group('status_code')
@@ -53,14 +52,16 @@ def update_metrics(line, total_file_size, status_codes_stats):
         int: The new total file size.
     """
     line_info = extract_input(line)
-    if line_info['status_code'] in status_codes_stats:
-        status_codes_stats[line_info['status_code']] += 1
+    status_code = line_info.get('status_code', '0')
+    if status_code in status_codes_stats.keys():
+        status_codes_stats[status_code] += 1
     return total_file_size + line_info['file_size']
 
 
 def execute():
-    '''Starts the log parser.
-    '''
+    """
+    initialize the log parser.
+    """
     line_num = 0
     total_file_size = 0
     status_codes_stats = {
@@ -74,9 +75,10 @@ def execute():
         '500': 0,
     }
     try:
-        for line in sys.stdin:
+        while True:
+            line = input()
             total_file_size = update_metrics(
-                line.strip(),
+                line,
                 total_file_size,
                 status_codes_stats,
             )
@@ -88,4 +90,7 @@ def execute():
 
 
 if __name__ == '__main__':
+    """
+    Run the log parser
+    """
     execute()
