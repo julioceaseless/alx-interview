@@ -37,6 +37,9 @@ def makeChange(coins, total):
         or -1 if it's impossible.
     """
 
+    if total <= 0:
+        return 0
+
     coins.sort(reverse=True)  # Sort coins in descending order
     result = 0
 
