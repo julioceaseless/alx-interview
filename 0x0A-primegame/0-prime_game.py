@@ -1,4 +1,9 @@
+#!/usr/bin/python3
+"""prime game"""
+
+
 def generate_primes(n):
+    """generates primes up to n"""
     primes = [True] * (n + 1)
 
     # 0 and 1 are not primes
@@ -13,6 +18,7 @@ def generate_primes(n):
 
 
 def isWinner(x, nums):
+    """Determines the overall winner after playing all rounds"""
     if x <= 0 or not nums:
         return None
 
@@ -23,6 +29,7 @@ def isWinner(x, nums):
 
     # memoize
     def get_winner(n):
+        """Determines winner for specific round"""
         if n in memo:
             return memo[n]
 
